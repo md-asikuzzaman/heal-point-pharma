@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { useRouter } from "next/navigation";
 import slugify from "slugify";
 import { Minus, Plus, Trash2, PackageX, Bell } from "lucide-react";
-import type { Product } from "@/lib/generated/prisma";
+import type { Product } from "@prisma/client";
 import { useState } from "react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";

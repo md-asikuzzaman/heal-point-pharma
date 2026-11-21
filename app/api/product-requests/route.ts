@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { productRequestSchema } from "@/schema";
-import { ProductRequest, ProductRequestStatus } from "@/lib/generated/prisma";
+import { ProductRequest, ProductRequestStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ApiResponse<T> {

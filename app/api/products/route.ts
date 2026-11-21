@@ -1,12 +1,12 @@
-import { auth } from '@/lib/auth';
-import cloudinary from '@/lib/cloudinary';
-import { Product } from '@/lib/generated/prisma';
-import { prisma } from '@/lib/prisma';
-import { productSchema } from '@/schema';
+import { auth } from "@/lib/auth";
+import cloudinary from "@/lib/cloudinary";
+import { Product } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { productSchema } from "@/schema";
 
-import { NextRequest, NextResponse } from 'next/server';
-import slugify from 'slugify';
-import Fuse from 'fuse.js';
+import { NextRequest, NextResponse } from "next/server";
+import slugify from "slugify";
+import Fuse from "fuse.js";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -26,7 +26,7 @@ export async function POST(
     const session = await auth();
     if (!session) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized access.' },
+        { success: false, error: "Unauthorized access." },
         { status: 401 },
       );
     }
@@ -37,7 +37,7 @@ export async function POST(
 
     if (!result.success) {
       return NextResponse.json(
-        { success: false, error: 'Invalid product data.' },
+        { success: false, error: "Invalid product data." },
         { status: 400 },
       );
     }
@@ -48,14 +48,14 @@ export async function POST(
     // Parse tags from comma-separated string
     const tags = data.tags
       ? data.tags
-          .split(',')
+          .split(",")
           .map((t) => t.trim())
           .filter(Boolean)
       : [];
 
     // Upload Image to Cloudinary
     const uploaded = await cloudinary.uploader.upload(data.image, {
-      folder: 'heal-point',
+      folder: "heal-point",
     });
 
     // Save Product to Database
@@ -77,9 +77,9 @@ export async function POST(
 
     return NextResponse.json({ success: true, data: product }, { status: 201 });
   } catch (error) {
-    console.error('[PRODUCT_POST_ERROR]', error);
+    console.error("[PRODUCT_POST_ERROR]", error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error.' },
+      { success: false, error: "Internal server error." },
       { status: 500 },
     );
   }
@@ -94,18 +94,18 @@ export async function GET(
 ): Promise<NextResponse<ApiResponse<Product[]>>> {
   try {
     const { searchParams } = new URL(req.url);
-    const q = searchParams.get('q');
+    const q = searchParams.get("q");
 
     // Only get active products for public API
     let products = await prisma.product.findMany({
       where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // If search query provided, use Fuse.js for fuzzy search
     if (q && q.trim()) {
       const fuseOptions = {
-        keys: ['title', 'brand', 'medicineType', 'tags'],
+        keys: ["title", "brand", "medicineType", "tags"],
         threshold: 0.4,
         includeScore: true,
       };
@@ -119,9 +119,9 @@ export async function GET(
 
     return NextResponse.json({ success: true, data: products });
   } catch (error) {
-    console.error('[PRODUCT_GET_ERROR]', error);
+    console.error("[PRODUCT_GET_ERROR]", error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error.' },
+      { success: false, error: "Internal server error." },
       { status: 500 },
     );
   }

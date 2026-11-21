@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ProductRequest, ProductRequestStatus } from "@/lib/generated/prisma";
+import { ProductRequest, ProductRequestStatus } from "@prisma/client";
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 

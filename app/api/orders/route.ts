@@ -1,4 +1,4 @@
-import { Order } from "@/lib/generated/prisma";
+import { Order } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -26,7 +26,7 @@ export async function GET(): Promise<NextResponse<ApiResponse<Order[]>>> {
 
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

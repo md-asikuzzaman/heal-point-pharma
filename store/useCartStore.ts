@@ -1,6 +1,6 @@
-import type { Product } from '@/lib/generated/prisma';
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import type { Product } from "@prisma/client";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type ProductStoreType = Product & {
   quantity: number;
@@ -134,7 +134,7 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'cart-storage', // key for localStorage
+      name: "cart-storage", // key for localStorage
     },
   ),
 );

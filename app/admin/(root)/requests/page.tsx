@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ProductRequest, ProductRequestStatus } from "@/lib/generated/prisma";
+import { ProductRequest, ProductRequestStatus } from "@prisma/client";
 import Link from "next/link";
 
 interface ProductRequestWithRelations extends ProductRequest {

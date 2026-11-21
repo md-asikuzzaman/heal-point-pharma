@@ -3,7 +3,7 @@
 import { CheckCircle, Star } from "lucide-react";
 import Image from "next/image";
 import ProductActions from "./ProductActions";
-import { Product } from "@/lib/generated/prisma";
+import { Product } from "@prisma/client";
 
 const ProjectDetailsCard = (product: Product) => {
   const {

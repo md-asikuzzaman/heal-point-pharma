@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import ProjectDetailsCard from "../_components/ProjectDetailsCard";
 import { prisma } from "@/lib/prisma";
-import { Product } from "@/lib/generated/prisma";
+import { Product } from "@prisma/client";
 
 export const revalidate = 60;
 interface Props {
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `${process.env.NEXT_PUBLIC_SITE_URL}/api/products/${slug}`,
     {
       next: { revalidate: 60 },
-    }
+    },
   );
 
   const { data: product }: ProductApiResponse = await res.json();
@@ -70,7 +70,7 @@ export default async function ProductDetailsPage({ params }: Props) {
     `${process.env.NEXT_PUBLIC_SITE_URL}/api/products/${slug}`,
     {
       next: { revalidate: 60 },
-    }
+    },
   );
 
   const product: ProductApiResponse = await res.json();

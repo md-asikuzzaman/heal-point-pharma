@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Bell, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
-import type { Product } from "@/lib/generated/prisma";
+import type { Product } from "@prisma/client";
 import axios from "axios";
 
 interface ProductRequestModalProps {
