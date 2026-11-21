@@ -1,20 +1,18 @@
-import Image from "next/image";
+import SafeImage from "@/components/shared/SafeImages";
 import Link from "next/link";
-import React from "react";
 
 const NavbarLogo = () => {
   return (
     <Link href="/" className="block">
-      <div className="relative w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20">
-        <Image
-          src="/images/logo.png"
-          alt="Heal point"
-          fill
-          className="rounded-full object-cover shadow-2xl border-2 border-green-500"
-          sizes="(max-width: 768px) 48px, (max-width: 1024px) 64px, 80px"
-          priority
-        />
-      </div>
+      <SafeImage
+        src="/images/logo.png"
+        alt="Heal point"
+        width={80}
+        height={80}
+        className="rounded-full object-cover shadow-2xl border-2 border-green-500 size-10  md:size-14"
+        sizes="(max-width: 768px) 48px, (max-width: 1024px) 64px, 80px"
+        priority
+      />
     </Link>
   );
 };
