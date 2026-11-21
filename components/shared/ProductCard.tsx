@@ -121,7 +121,7 @@ export const ProductCard = ({ ...product }: Product) => {
         </Link>
         {/* Content */}
         <CardContent className="p-2 md:p-4">
-          <h3 className="text-sm md:text-md font-semibold text-gray-800 group-hover:text-green-600 mb-1 line-clamp-1">
+          <h3 className="text-sm md:text-lg font-semibold text-gray-800 group-hover:text-green-600 mb-1 line-clamp-1">
             {title}
           </h3>
 

@@ -31,13 +31,13 @@ const BannerHighlights = () => {
   ];
 
   return (
-    <section className="my-12 px-2 md:px-4">
-      <Container className="bg-green-50 py-10 px-6 sm:px-10 rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-100">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 px-6 py-8">
+    <section className="my-6 md:my-8 lg:my-10 max-sm:mx-2">
+      <Container className="bg-white py-10 px-6 sm:px-10 rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {items.map(({ icon: Icon, title, subtitle }, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl shadow-md p-5 text-center hover:shadow-lg transition-all border border-green-100 hover:border-green-300"
+              className="bg-green-50 rounded-xl shadow-md p-5 text-center hover:shadow-lg transition-all border border-green-100 hover:border-green-300"
             >
               <div className="flex justify-center mb-3">
                 <Icon className="size-8 text-green-600" aria-label={title} />
