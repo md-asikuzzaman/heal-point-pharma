@@ -17,12 +17,12 @@ export default async function Shop() {
   const products: ProductsApiResponse = await res.json();
 
   return (
-    <section className="my-12 px-4">
-      <Container className="bg-white py-10 px-6 sm:px-10 rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-100">
+    <section className="my-6 md:my-8 lg:my-10 max-sm:mx-2">
+      <Container className="bg-white py-8 md:py-10 px-4 md:px-6 sm:px-10 rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-100">
         <Heading text="Shop Natural Products" />
 
         {/* Products list */}
-        <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        <div className=" grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
           {products.data.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
