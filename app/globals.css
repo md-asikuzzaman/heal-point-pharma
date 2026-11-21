@@ -124,23 +124,6 @@
   }
 }
 
-/* Fancy Slick Dots */
-/* .slick-dots {
-  bottom: 15px;
-  display: flex !important;
-  justify-content: center;
-  gap: 10px;
-}
-
-.slick-dots li button:before {
-  font-size: 12px;
-  color: #a3a3a3;
-  opacity: 1;
-}
-
-.slick-dots li.slick-active button:before {
-  color: #16a34a !important;
-} */
 
 .rich-text-editor h1 {
   @apply text-2xl font-bold;
@@ -152,4 +135,31 @@
 
 .rich-text-editor h3 {
   @apply text-lg font-bold;
+}
+
+/* Swiper pagination */
+.swiper-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.swiper-pagination-bullet {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 9999px;
+  background-color: #000 !important;
+  opacity: 1;
+  margin: 0 !important;
+  transition:
+    width 300ms ease,
+    background-color 300ms ease;
+}
+
+.swiper-pagination-bullet-active {
+  width: 24px !important;
+  background-color: #000 !important;
+  border-radius: 9px !important;
 }
