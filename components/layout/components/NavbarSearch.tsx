@@ -1,315 +1,326 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/ui/input';
-import debounce from 'lodash.debounce';
-import { Search, Clock, TrendingUp, PackageX, Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState, useCallback, memo } from 'react';
-import slugify from 'slugify';
-import Fuse from 'fuse.js';
-import Image from 'next/image';
+import { Input } from "@/components/ui/input";
+import { productService } from "@/services/product.service";
+import { useDebounce } from "@/hooks/use-debounce";
 
-interface SearchProduct {
-  id: string;
-  title: string;
-  slug: string;
-  price: number;
-  image: string;
-  brand: string;
-  stock: number;
-  tags: string[];
-  medicineType: string;
-}
+import { Search, Clock, TrendingUp, PackageX } from "lucide-react";
 
-interface ApiResponse {
-  success: boolean;
-  data: SearchProduct[];
-}
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-const RECENT_SEARCHES_KEY = 'recent-searches';
+import { Product } from "@prisma/client";
+import { productKeys } from "@/lib/product-keys";
+import SearchSkeleton from "./SearchSkeleton";
+import SearchResultItem from "./SearchResultItem";
+
+const RECENT_SEARCHES_KEY = "recent-searches";
 const MAX_RECENT_SEARCHES = 5;
 
-// Highlight matched text component
-const HighlightText = memo(
-  ({ text, query }: { text: string; query: string }) => {
-    if (!query.trim()) return <>{text}</>;
-
-    const fuse = new Fuse([text], { threshold: 0.4 });
-    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${escapedQuery.split('').join('.*?')})`, 'gi');
-    const parts = text.split(regex);
-
-    return (
-      <>
-        {parts.map((part, i) => {
-          const isMatch =
-            query.toLowerCase().includes(part.toLowerCase()) ||
-            part.toLowerCase().includes(query.toLowerCase());
-          return isMatch && part.toLowerCase() !== text.toLowerCase() ? (
-            <mark
-              key={i}
-              className='bg-green-200 text-green-900 rounded px-0.5'
-            >
-              {part}
-            </mark>
-          ) : (
-            <span key={i}>{part}</span>
-          );
-        })}
-      </>
-    );
-  },
-);
-HighlightText.displayName = 'HighlightText';
-
-// Skeleton loader for search results
-const SearchSkeleton = memo(() => (
-  <div className='px-4 py-3'>
-    {[...Array(3)].map((_, i) => (
-      <div key={i} className='flex items-center gap-3 py-2'>
-        <div className='w-10 h-10 bg-gray-200 rounded-lg animate-pulse' />
-        <div className='flex-1 space-y-2'>
-          <div className='h-3 bg-gray-200 rounded w-3/4 animate-pulse' />
-          <div className='h-2 bg-gray-200 rounded w-1/2 animate-pulse' />
-        </div>
-      </div>
-    ))}
-  </div>
-));
-SearchSkeleton.displayName = 'SearchSkeleton';
-
 const NavbarSearch = () => {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchProduct[]>([]);
-  const [trendingProducts, setTrendingProducts] = useState<SearchProduct[]>([]);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const router = useRouter();
+
+  // Input and dropdown state
+  const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+
+  // Recent searches
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Refs
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const router = useRouter();
+
+  // Debounced search query
+  const debouncedQuery = useDebounce(query.trim(), 300);
+
+  // Search products
+  const { data: searchResults = [], isLoading: isSearchLoading } = useQuery({
+    queryKey: productKeys.search(debouncedQuery),
+    queryFn: () => productService.search(debouncedQuery),
+    enabled: Boolean(debouncedQuery) && showDropdown,
+    staleTime: 30 * 1000,
+  });
+
+  // Trending products
+  const { data: trendingProducts = [], isLoading: isTrendingLoading } =
+    useQuery({
+      queryKey: productKeys.trending(),
+      queryFn: productService.getTrending,
+      enabled: showDropdown && !query.trim(),
+      staleTime: 5 * 60 * 1000,
+    });
 
   // Load recent searches from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+
       if (saved) {
-        setRecentSearches(JSON.parse(saved));
+        const parsed: unknown = JSON.parse(saved);
+
+        if (
+          Array.isArray(parsed) &&
+          parsed.every((item) => typeof item === "string")
+        ) {
+          setRecentSearches(parsed.slice(0, MAX_RECENT_SEARCHES));
+        }
       }
     } catch {
       // Ignore localStorage errors
+    } finally {
+      setIsHydrated(true);
     }
   }, []);
 
   // Save recent search
-  const saveRecentSearch = useCallback(
-    (searchQuery: string) => {
-      if (!searchQuery.trim()) return;
+  const saveRecentSearch = useCallback((search: string) => {
+    const value = search.trim();
+
+    if (!value) return;
+
+    setRecentSearches((previous) => {
+      const updated = [
+        value,
+        ...previous.filter(
+          (item) => item.toLowerCase() !== value.toLowerCase(),
+        ),
+      ].slice(0, MAX_RECENT_SEARCHES);
+
       try {
-        const updated = [
-          searchQuery,
-          ...recentSearches.filter((s) => s !== searchQuery),
-        ].slice(0, MAX_RECENT_SEARCHES);
-        setRecentSearches(updated);
         localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
       } catch {
         // Ignore localStorage errors
       }
-    },
-    [recentSearches],
-  );
 
-  // Fetch trending products for default state
-  useEffect(() => {
-    const fetchTrending = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SITE_URL}/api/products?limit=5`,
-        );
-        const json: ApiResponse = await res.json();
-        if (json.success) {
-          setTrendingProducts(json.data.slice(0, 4));
-        }
-      } catch (err) {
-        console.error('Error fetching trending:', err);
-      }
-    };
-    fetchTrending();
+      return updated;
+    });
   }, []);
 
-  // Debounced search function
-  const debouncedSearch = useRef(
-    debounce(async (searchQuery: string) => {
-      if (!searchQuery.trim()) {
-        setResults([]);
-        setIsLoading(false);
-        return;
-      }
+  // Select product
+  const handleSelect = useCallback(
+    (product: Product) => {
+      saveRecentSearch(query);
 
-      setIsLoading(true);
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SITE_URL}/api/products?q=${encodeURIComponent(searchQuery)}`,
-        );
-        const json: ApiResponse = await res.json();
-        setResults(json.data);
-        setActiveIndex(0);
-      } catch (err) {
-        console.error('Error fetching:', err);
-        setResults([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 300),
-  ).current;
+      setShowDropdown(false);
+      setQuery("");
+      setActiveIndex(-1);
 
+      router.push(`/products/${product.slug}`);
+    },
+    [query, router, saveRecentSearch],
+  );
+
+  // Select recent search
+  const handleRecentClick = (search: string) => {
+    setQuery(search);
+    setActiveIndex(-1);
+  };
+
+  // Clear recent searches
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+
+    try {
+      localStorage.removeItem(RECENT_SEARCHES_KEY);
+    } catch {
+      // Ignore localStorage errors
+    }
+  };
+
+  // Determine dropdown content
+  const showRecent = !query.trim() && isHydrated && recentSearches.length > 0;
+
+  const showTrending =
+    !query.trim() && isHydrated && recentSearches.length === 0;
+
+  const displayItems = query.trim()
+    ? searchResults
+    : showRecent
+      ? recentSearches
+      : trendingProducts;
+
+  const isLoading = query.trim() ? isSearchLoading : isTrendingLoading;
+
+  // Reset active selection when results change
   useEffect(() => {
-    debouncedSearch(query);
-    return () => debouncedSearch.cancel();
-  }, [query, debouncedSearch]);
+    setActiveIndex(-1);
+    itemRefs.current = [];
+  }, [debouncedQuery, recentSearches.length]);
+
+  // Scroll active item into view
+  useEffect(() => {
+    const activeElement = itemRefs.current[activeIndex];
+
+    activeElement?.scrollIntoView({
+      block: "nearest",
+      behavior: "smooth",
+    });
+  }, [activeIndex]);
 
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
+        !dropdownRef.current?.contains(target) &&
+        !inputRef.current?.contains(target)
       ) {
         setShowDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  // Scroll into view when activeIndex changes
-  useEffect(() => {
-    const activeEl = itemRefs.current[activeIndex];
-    if (activeEl) {
-      activeEl.scrollIntoView({
-        block: 'nearest',
-        behavior: 'smooth',
-      });
+  // Keyboard navigation
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const totalItems = displayItems.length;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+
+      if (!totalItems) return;
+
+      setActiveIndex((previous) =>
+        previous >= totalItems - 1 ? 0 : previous + 1,
+      );
     }
-  }, [activeIndex]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const items = getDisplayItems();
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
 
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setActiveIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActiveIndex((prev) => (prev <= 0 ? items.length - 1 : prev - 1));
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      const selected = items[activeIndex] || items[0];
-      if (selected) {
-        handleSelect(selected);
+      if (!totalItems) return;
+
+      setActiveIndex((previous) =>
+        previous <= 0 ? totalItems - 1 : previous - 1,
+      );
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      if (activeIndex < 0) return;
+
+      if (query.trim()) {
+        const selected = searchResults[activeIndex];
+
+        if (selected) handleSelect(selected);
+      } else if (showRecent) {
+        const selected = recentSearches[activeIndex];
+
+        if (selected) handleRecentClick(selected);
+      } else {
+        const selected = trendingProducts[activeIndex];
+
+        if (selected) handleSelect(selected);
       }
-    } else if (e.key === 'Escape') {
+    }
+
+    if (event.key === "Escape") {
       setShowDropdown(false);
       inputRef.current?.blur();
     }
   };
 
-  const handleSelect = (item: SearchProduct) => {
-    saveRecentSearch(query);
-    router.push(`/products/${item.slug}`);
-    setShowDropdown(false);
-    setQuery('');
-    setResults([]);
-  };
-
-  const handleRecentClick = (search: string) => {
-    setQuery(search);
-    debouncedSearch(search);
-  };
-
-  const clearRecentSearches = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setRecentSearches([]);
-    try {
-      localStorage.removeItem(RECENT_SEARCHES_KEY);
-    } catch {
-      // Ignore
-    }
-  };
-
-  // Get items to display in dropdown
-  const getDisplayItems = () => {
-    if (query.trim() && results.length > 0) return results;
-    if (query.trim()) return [];
-    return trendingProducts;
-  };
-
-  const displayItems = getDisplayItems();
-  const showRecent = !query.trim() && recentSearches.length > 0;
-  const showTrending =
-    !query.trim() && !showRecent && trendingProducts.length > 0;
-  const showEmpty = query.trim() && !isLoading && results.length === 0;
+  const showEmpty =
+    Boolean(query.trim()) && !isLoading && searchResults.length === 0;
 
   return (
-    <div className='relative w-full'>
+    <div className="relative w-full">
+      {/* Search Input */}
       <Input
         ref={inputRef}
-        type='text'
+        type="text"
         value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
+        onChange={(event) => {
+          setQuery(event.target.value);
           setShowDropdown(true);
           setActiveIndex(-1);
         }}
         onFocus={() => setShowDropdown(true)}
         onKeyDown={handleKeyDown}
-        placeholder='Search products...'
-        className='pr-12 rounded-xl border !border-gray-300 shadow-sm focus:!border-green-600 focus:ring-2 focus:!ring-green-300 transition'
+        placeholder="Search products..."
+        autoComplete="off"
+        className="
+          rounded-xl border !border-gray-300 pr-12
+          shadow-sm transition
+          focus:!border-green-600
+          focus:ring-2 focus:!ring-green-300
+        "
       />
-      <Search className='absolute top-1/2 right-3 -translate-y-1/2 w-5 h-5 text-green-500 pointer-events-none' />
 
+      <Search
+        className="
+        pointer-events-none absolute right-3 top-1/2
+        h-5 w-5 -translate-y-1/2 text-green-500
+      "
+      />
+
+      {/* Dropdown */}
       {showDropdown && (
         <div
           ref={dropdownRef}
-          className='absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto'
+          className="
+            absolute z-50 mt-2 max-h-80 w-full
+            overflow-y-auto rounded-xl border
+            border-gray-200 bg-white shadow-lg
+          "
         >
-          {/* Loading State */}
+          {/* Loading */}
           {isLoading && <SearchSkeleton />}
 
           {/* Recent Searches */}
           {showRecent && !isLoading && (
-            <div className='px-4 py-3'>
-              <div className='flex items-center justify-between mb-2'>
-                <div className='flex items-center gap-2 text-gray-500 text-sm'>
-                  <Clock className='w-4 h-4' />
-                  <span className='font-medium'>Recent Searches</span>
+            <div className="px-4 py-3">
+              <div className="mb-2 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Clock className="h-4 w-4" />
+                  <span className="font-medium">Recent Searches</span>
                 </div>
+
                 <button
+                  type="button"
                   onClick={clearRecentSearches}
-                  className='text-xs text-gray-400 hover:text-red-500 transition-colors'
+                  className="
+                    text-xs text-gray-400
+                    transition-colors hover:text-red-500
+                  "
                 >
                   Clear
                 </button>
               </div>
+
               {recentSearches.map((search, index) => (
                 <div
-                  key={`recent-${index}`}
-                  ref={(el) => {
-                    itemRefs.current[index] = el;
+                  key={search}
+                  ref={(element) => {
+                    itemRefs.current[index] = element;
                   }}
                   onClick={() => handleRecentClick(search)}
                   onMouseEnter={() => setActiveIndex(index)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors ${
-                    index === activeIndex
-                      ? 'bg-green-100 text-green-800'
-                      : 'hover:bg-gray-100'
-                  }`}
+                  className={`
+                    flex cursor-pointer items-center gap-2
+                    rounded-lg px-3 py-2 text-sm
+                    transition-colors
+                    ${
+                      index === activeIndex
+                        ? "bg-green-100 text-green-800"
+                        : "hover:bg-gray-100"
+                    }
+                  `}
                 >
-                  <Clock className='w-4 h-4 text-gray-400' />
+                  <Clock className="h-4 w-4 text-gray-400" />
                   <span>{search}</span>
                 </div>
               ))}
@@ -318,100 +329,77 @@ const NavbarSearch = () => {
 
           {/* Trending Products */}
           {showTrending && !isLoading && (
-            <div className='px-4 py-3'>
-              <div className='flex items-center gap-2 text-gray-500 text-sm mb-2'>
-                <TrendingUp className='w-4 h-4' />
-                <span className='font-medium'>Trending Products</span>
+            <div className="px-4 py-3">
+              <div className="mb-2 flex items-center gap-2 text-sm text-gray-500">
+                <TrendingUp className="h-4 w-4" />
+                <span className="font-medium">Trending Products</span>
               </div>
-              {trendingProducts.map((item, index) => {
-                const itemIndex = recentSearches.length + index;
-                return (
+
+              {trendingProducts.map((product, index) => (
+                <div
+                  key={product.id}
+                  ref={(element) => {
+                    itemRefs.current[index] = element;
+                  }}
+                  onClick={() => handleSelect(product)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  className={`
+                    flex cursor-pointer items-center gap-3
+                    rounded-lg px-3 py-2
+                    transition-colors
+                    ${
+                      index === activeIndex
+                        ? "bg-green-100"
+                        : "hover:bg-gray-100"
+                    }
+                  `}
+                >
                   <div
-                    key={item.id}
-                    ref={(el) => {
-                      itemRefs.current[itemIndex] = el;
-                    }}
-                    onClick={() => handleSelect(item)}
-                    onMouseEnter={() => setActiveIndex(itemIndex)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                      itemIndex === activeIndex
-                        ? 'bg-green-100'
-                        : 'hover:bg-gray-100'
-                    }`}
+                    className="
+                    relative h-10 w-10 shrink-0
+                    overflow-hidden rounded-lg
+                  "
                   >
-                    <div className='relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0'>
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className='object-cover'
-                      />
-                    </div>
-                    <div className='flex-1 min-w-0'>
-                      <p className='text-sm font-medium text-gray-800 truncate'>
-                        {item.title}
-                      </p>
-                      <p className='text-xs text-gray-500'>
-                        ৳{item.price.toFixed(2)}
-                      </p>
-                    </div>
+                    <Image
+                      src={product.image}
+                      alt={product.title}
+                      fill
+                      sizes="40px"
+                      className="object-cover"
+                    />
                   </div>
-                );
-              })}
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-gray-800">
+                      {product.title}
+                    </p>
+
+                    <p className="text-xs text-gray-500">
+                      ৳{product.price.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
           {/* Search Results */}
-          {!isLoading && results.length > 0 && (
-            <div className='py-2'>
-              {results.map((item, index) => (
+          {!isLoading && query.trim() && searchResults.length > 0 && (
+            <div className="py-2">
+              {searchResults.map((product, index) => (
                 <div
-                  key={item.id}
-                  ref={(el) => {
-                    itemRefs.current[index] = el;
+                  key={product.id}
+                  ref={(element) => {
+                    itemRefs.current[index] = element;
                   }}
-                  onClick={() => handleSelect(item)}
-                  onMouseEnter={() => setActiveIndex(index)}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors ${
-                    index === activeIndex ? 'bg-green-100' : 'hover:bg-gray-50'
-                  }`}
                 >
-                  <div className='relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border'>
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className='object-cover'
-                    />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-medium text-gray-800 truncate'>
-                      <HighlightText text={item.title} query={query} />
-                    </p>
-                    <div className='flex items-center gap-2 mt-0.5'>
-                      <span className='text-xs text-gray-500'>
-                        {item.brand}
-                      </span>
-                      <span className='text-xs text-gray-300'>•</span>
-                      <span className='text-xs text-gray-500'>
-                        {item.medicineType}
-                      </span>
-                    </div>
-                  </div>
-                  <div className='text-right flex-shrink-0'>
-                    <p className='text-sm font-semibold text-green-600'>
-                      ৳{item.price.toFixed(2)}
-                    </p>
-                    {item.stock <= 0 ? (
-                      <span className='text-xs text-red-500'>Out of stock</span>
-                    ) : item.stock < 10 ? (
-                      <span className='text-xs text-orange-500'>
-                        {item.stock} left
-                      </span>
-                    ) : (
-                      <span className='text-xs text-green-600'>In stock</span>
-                    )}
-                  </div>
+                  <SearchResultItem
+                    product={product}
+                    query={query}
+                    active={index === activeIndex}
+                    onSelect={handleSelect}
+                    onHover={() => setActiveIndex(index)}
+                  />
                 </div>
               ))}
             </div>
@@ -419,10 +407,16 @@ const NavbarSearch = () => {
 
           {/* Empty State */}
           {showEmpty && (
-            <div className='px-4 py-8 text-center'>
-              <PackageX className='w-12 h-12 text-gray-300 mx-auto mb-3' />
-              <p className='text-gray-500 font-medium'>No results found</p>
-              <p className='text-sm text-gray-400 mt-1'>
+            <div className="px-4 py-8 text-center">
+              <PackageX
+                className="
+                mx-auto mb-3 h-12 w-12 text-gray-300
+              "
+              />
+
+              <p className="font-medium text-gray-500">No results found</p>
+
+              <p className="mt-1 text-sm text-gray-400">
                 Try different keywords or check spelling
               </p>
             </div>

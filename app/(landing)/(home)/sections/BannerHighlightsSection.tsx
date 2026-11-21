@@ -37,7 +37,7 @@ const BannerHighlights = () => {
           {items.map(({ icon: Icon, title, subtitle }, index) => (
             <div
               key={index}
-              className="bg-green-50 rounded-xl shadow-md p-5 text-center hover:shadow-lg transition-all border border-green-100 hover:border-green-300"
+              className="bg-green-50 rounded-tr-4xl rounded-bl-4xl shadow-md p-5 text-center hover:shadow-lg transition-all border border-green-100 hover:border-green-300"
             >
               <div className="flex justify-center mb-3">
                 <Icon className="size-8 text-green-600" aria-label={title} />
