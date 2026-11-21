@@ -6,7 +6,7 @@ import HeroSlider from "../components/HeroSlider";
 const SliderSection = () => {
   return (
     <section className="mt-3 md:mt-6">
-      <Container className="px-1 md:p-0!">
+      <Container className="px-2 md:p-0!">
         <HeroSlider />
       </Container>
     </section>

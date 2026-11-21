@@ -120,12 +120,12 @@ export const ProductCard = ({ ...product }: Product) => {
           </div>
         </Link>
         {/* Content */}
-        <CardContent className="p-4">
-          <h3 className="text-md font-semibold text-gray-800 group-hover:text-green-600 line-clamp-2 mb-1">
+        <CardContent className="p-2 md:p-4">
+          <h3 className="text-sm md:text-md font-semibold text-gray-800 group-hover:text-green-600 mb-1 line-clamp-1">
             {title}
           </h3>
 
-          <div className="flex items-center justify-between mb-2">
+          <div className="md:flex items-center justify-between mb-2">
             <p
               className="text-green-600 font-bold text-lg"
               aria-label="product price"
@@ -140,12 +140,12 @@ export const ProductCard = ({ ...product }: Product) => {
           </div>
         </CardContent>
         {/* Footer */}
-        <CardFooter className="p-4 pt-0 flex flex-col gap-2">
+        <CardFooter className="p-2 md:p-4 pt-0 flex flex-col gap-2">
           {/* Add to Cart or Request Product */}
           {!inStock ? (
             <button
               onClick={handleRequestProduct}
-              className="w-full py-2 px-4 text-sm font-medium bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2 px-2 md:px-4 text-sm font-medium bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition-colors flex items-center justify-center gap-2"
             >
               <Bell className="w-4 h-4" />
               Request Product

@@ -19,9 +19,9 @@ const ProductSection = async () => {
   const products: ProductsApiResponse = await res.json();
 
   return (
-    <section className="mt-12 px-2 md:px-4">
-      <Container className="bg-white py-10 px-6 sm:px-10 rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-100">
-        <div className="flex flex-col md:flex-row items-center justify-between border-b border-muted pb-2 mb-4">
+    <section className="mt-6 md:mt-8 lg:mt-10">
+      <Container className="bg-white py-8 md:py-10 rounded-xl md:rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-100 max-sm:px-2">
+        <div className="flex flex-col md:flex-row items-center justify-between border-b border-muted pb-2 mb-4 gap-2">
           <Heading text="Unani & Natural Products" />
           <Link
             href="/products"
@@ -37,7 +37,7 @@ const ProductSection = async () => {
         </div>
 
         {/* Products list */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mt-8">
           {products.data.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
