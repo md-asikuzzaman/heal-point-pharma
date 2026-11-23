@@ -1,18 +1,17 @@
-import Link from "next/link";
-import React from "react";
 import {
+  contactInfo,
   footerSections,
   socialLinks,
-  contactInfo,
 } from "@/constants/footerData";
+import Link from "next/link";
+import { FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
 import Container from "../shared/Container";
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 
 import { BsWhatsapp } from "react-icons/bs";
 
 const Footer = () => {
   return (
-    <footer className="bg-green-900 text-gray-200">
+    <footer className="from-green-950 to-green-800 bg-linear-to-t text-gray-200">
       <Container>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 py-10">
           {/* Dynamic Footer Sections */}
@@ -109,7 +108,7 @@ const Footer = () => {
       </Container>
 
       {/* Copyright */}
-      <div className="bg-green-950 text-center py-4 text-sm text-gray-300 border-t border-green-800">
+      <div className="text-center py-4 text-sm text-gray-300 border-t border-green-900">
         &copy; {new Date().getFullYear()} Heal point. All rights reserved.
       </div>
     </footer>
