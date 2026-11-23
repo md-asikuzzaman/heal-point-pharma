@@ -11,10 +11,10 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "Heal point",
-    template: "%s - Heal point",
+    default: "Heal point pharma",
+    template: "%s - Heal point pharma",
   },
-  description: "Heal point",
+  description: "Heal point pharma - Your trusted online pharmacy",
   keywords: "Heal point, Online Pharma, Heal point pharmacy",
   robots: "index, follow",
 

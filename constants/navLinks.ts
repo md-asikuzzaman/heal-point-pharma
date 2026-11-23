@@ -5,7 +5,7 @@ export const navLinks = [
   },
   {
     title: "Shop",
-    href: "/shop",
+    href: "/products",
   },
   {
     title: "Sexual Wellness",
