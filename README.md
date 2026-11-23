@@ -1,4 +1,4 @@
-# Heal Point Pharma
+# 💊 Heal Point Pharma
 
 A modern, full-stack pharmacy web application for browsing and managing healthcare products, featuring dynamic product discovery and a secure admin dashboard.
 
@@ -29,9 +29,9 @@ Heal Point Pharma provides a responsive shopping experience with dynamic product
 
 ## Demo Access
 
-**Login Page:** [Heal Point Pharma](https://heal-point-pharma.vercel.app/auth/login)
+**🔑 Login Page:** [Heal Point Pharma](https://heal-point-pharma.vercel.app/auth/login)
 
-**Admin Dashboard:** [Access Dashboard](https://heal-point-pharma.vercel.app/admin)
+**🔑 Admin Dashboard:** [Access Dashboard](https://heal-point-pharma.vercel.app/admin)
 
 | Role | Email | Password |
 |---|---|---|
