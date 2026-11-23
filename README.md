@@ -1,43 +1,38 @@
 # 💊 Heal Point Pharma
 
-A modern pharmacy web application built with **Next.js App Router**, **Prisma**, **MongoDB**, and **ShadCN UI**, providing users with an elegant interface to browse, search, and manage healthcare products. Admins can manage product listings and control key site functionality via a secured admin panel.
+A modern, full-stack pharmacy web application for browsing and managing healthcare products, featuring dynamic product discovery and a secure admin dashboard.
 
-🔗 **Live Site:** [https://heal-point-pharma.vercel.app](https://heal-point-pharma.vercel.app)
+**Live Demo:** [Heal Point Pharma](https://heal-point-pharma.vercel.app)
 
----
+## Overview
 
-## 🚀 Features
+Heal Point Pharma provides a responsive shopping experience with dynamic product listings, search and category filtering, and role-based admin access for managing the platform.
 
-- 🛍️ Dynamic Product Listings (from MongoDB)
-- 🔍 Search & Filtering by Name/Category
-- 📱 Mobile-First Responsive UI
-- 🔒 Secure Admin Dashboard
-- 🧩 Modern Component Design using **ShadCN UI**
-- ⚙️ Backend powered by **Prisma + MongoDB**
-- ⚡ Fast Performance with SSR + ISR (Next.js)
+## Key Features
 
----
+- **Product Discovery** — Dynamic product listings with search and category filtering.
+- **Admin Dashboard** — Secure, role-based access to product management.
+- **Responsive UI** — Mobile-first design with reusable components.
+- **Data Management** — MongoDB integration through Prisma ORM.
+- **Performance** — Next.js App Router with server-side rendering and caching strategies.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-| Technology       | Usage                        |
-|------------------|-------------------------------|
-| **Next.js (App Router)** | Frontend & Routing              |
-| **React.js**       | Core UI Library               |
-| **Prisma**         | ORM for MongoDB               |
-| **MongoDB**        | Primary Database              |
-| **ShadCN UI**      | UI Components & Styling       |
-| **Tailwind CSS**   | Styling Utilities             |
-| **TypeScript**     | Type Safety                   |
-| **Vercel**         | Deployment                    |
+| Category | Technologies |
+|---|---|
+| Frontend | Next.js, React, TypeScript |
+| UI & Styling | Tailwind CSS, shadcn/ui |
+| Backend & ORM | Next.js, Prisma |
+| Database | MongoDB |
+| Deployment | Vercel |
 
+## Demo Access
 
-## 🔑 Admin Credentials
+Explore the application using the following demo accounts:
 
-> Use the following credentials to access the **Admin Panel**.
-> 
-🔗 **Dashboard:** [https://heal-point-pharma.vercel.app/admin](https://heal-point-pharma.vercel.app/admin)
+**🔑 Login Page:** [Heal Point Pharma](https://heal-point-pharma.vercel.app/auth.login)
 
-```bash
-🔐 Email: admin@gmail.com
-🔐 Password: 123456
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@gmail.com` | `admin123` |
+| User | `user@gmail.com` | `user123` |
