@@ -9,7 +9,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Headset, LogIn, LogOut, Settings, UserCircle2 } from "lucide-react";
+import {
+  Headset,
+  LayoutDashboardIcon,
+  LogIn,
+  LogOut,
+  Settings,
+  UserCircle2,
+} from "lucide-react";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
@@ -23,7 +30,6 @@ const NavbarProfileDropdown = ({ session }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleSettings = () => router.push("/settings");
   const handleLogin = () =>
     router.push(`/api/auth/signin?callbackUrl=${pathname}`);
   const handleLogout = async () => {
@@ -74,9 +80,19 @@ const NavbarProfileDropdown = ({ session }: Props) => {
         <DropdownMenuGroup>
           {session ? (
             <>
+              {session.user?.role === "ADMIN" && (
+                <DropdownMenuItem
+                  className="px-3 py-2 cursor-pointer"
+                  onClick={() => router.push("/admin")}
+                >
+                  <LayoutDashboardIcon className="size-5" />
+                  Dashboard
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem
                 className="px-3 py-2 cursor-pointer"
-                onClick={handleSettings}
+                onClick={() => router.push("/settings")}
               >
                 <Settings className="size-5" />
                 Settings
@@ -85,7 +101,7 @@ const NavbarProfileDropdown = ({ session }: Props) => {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="px-3 py-2 cursor-pointer"
-                onClick={handleLogout}
+                onClick={async () => await signOut()}
               >
                 <LogOut className="size-5 text-red-600" />
                 <span className="text-red-600">Logout</span>

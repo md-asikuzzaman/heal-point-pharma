@@ -57,18 +57,8 @@ const items = [
     icon: Bell,
   },
   {
-    title: "Calendar",
-    url: "/admin/calendar",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "/admin/search",
-    icon: Search,
-  },
-  {
     title: "Settings",
-    url: "/admin/settings",
+    url: "/settings",
     icon: Settings,
   },
 ];
@@ -120,10 +110,9 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
+                  <Link href="/" rel="noopener noreferrer">
+                    Visit Site
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => signOut()}>
                   <span>Sign out</span>

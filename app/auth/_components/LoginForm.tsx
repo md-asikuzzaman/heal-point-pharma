@@ -72,8 +72,7 @@ const LoginForm = () => {
       }
 
       // Role-based redirect
-      const redirectPath =
-        session.user.role === "ADMIN" ? "/admin" : callbackUrl;
+      const redirectPath = session.user.role === "ADMIN" ? "/admin" : "/";
 
       console.log(redirectPath);
 
