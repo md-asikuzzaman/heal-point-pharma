@@ -94,7 +94,7 @@ model User {
   name          String?
   email         String?   @unique
   password      String?
-  role          Role      @default(user)
+  role          Role      @default(USER)
   address       Address?
   emailVerified DateTime? @map("email_verified")
   image         String?
@@ -108,8 +108,8 @@ model User {
 }
 
 enum Role {
-  user
-  admin
+  USER
+  ADMIN
 }
 
 model VerificationToken {

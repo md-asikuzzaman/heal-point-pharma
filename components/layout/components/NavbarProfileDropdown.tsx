@@ -72,10 +72,6 @@ const NavbarProfileDropdown = ({ session }: Props) => {
         )}
         <DropdownMenuLabel className="px-3 py-2">My Account</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem className="px-3 py-2 cursor-pointer">
-            <Headset className="size-5" />
-            Support
-          </DropdownMenuItem>
           {session ? (
             <>
               <DropdownMenuItem
