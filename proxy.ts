@@ -5,24 +5,33 @@ import { auth } from "./lib/auth";
 export async function proxy(req: NextRequest) {
   const session = await auth();
 
-  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
+  const { pathname } = req.nextUrl;
 
-  if (isAdminRoute) {
-    if (!session?.user || session.user.role !== "ADMIN") {
-      const signInUrl = new URL("/auth/login", req.url);
+  const isAdminRoute = pathname.startsWith("/admin");
 
-      signInUrl.searchParams.set(
-        "callbackUrl",
-        req.nextUrl.pathname + req.nextUrl.search,
-      );
+  const isAuthRoute =
+    pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register");
 
-      return NextResponse.redirect(signInUrl);
-    }
+  const isAuthenticated = !!session?.user;
+  const isAdmin = session?.user?.role === "ADMIN";
+
+  // Protect admin routes
+  if (isAdminRoute && (!isAuthenticated || !isAdmin)) {
+    const signInUrl = new URL("/auth/login", req.url);
+
+    signInUrl.searchParams.set("callbackUrl", pathname + req.nextUrl.search);
+
+    return NextResponse.redirect(signInUrl);
+  }
+
+  // Prevent authenticated users from accessing auth pages
+  if (isAuthRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/auth/login", "/auth/register"],
 };
