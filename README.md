@@ -30,7 +30,7 @@ Heal Point Pharma provides a responsive shopping experience with dynamic product
 
 Explore the application using the following demo accounts:
 
-**🔑 Login Page:** [Heal Point Pharma](https://heal-point-pharma.vercel.app/auth.login)
+**🔑 Login Page:** [Heal Point Pharma](https://heal-point-pharma.vercel.app/auth/login)
 
 | Role | Email | Password |
 |---|---|---|
