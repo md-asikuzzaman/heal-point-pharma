@@ -1,16 +1,13 @@
 "use client";
 
-import {
-  Calendar,
-  Bell,
-  ChevronUp,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  User2,
-} from "lucide-react";
+import { Bell, ChevronUp, Home, Inbox, Settings, User2 } from "lucide-react";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -22,17 +19,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 
 // Menu items.
 const items = [
@@ -101,7 +93,26 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {session?.user?.name}
+                  {session?.user?.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt="profile"
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      {session?.user?.name ? (
+                        <span className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-sm">
+                          {session.user.name[0]}
+                        </span>
+                      ) : (
+                        <User2 className="size-7 text-green-500" />
+                      )}
+                    </>
+                  )}
+                  {session?.user?.name}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

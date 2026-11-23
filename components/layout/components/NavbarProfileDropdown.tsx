@@ -32,9 +32,6 @@ const NavbarProfileDropdown = ({ session }: Props) => {
 
   const handleLogin = () =>
     router.push(`/api/auth/signin?callbackUrl=${pathname}`);
-  const handleLogout = async () => {
-    await signOut();
-  };
 
   return (
     <DropdownMenu>
