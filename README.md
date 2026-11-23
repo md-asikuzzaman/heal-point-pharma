@@ -1,4 +1,4 @@
-# 💊 Heal Point Pharma
+# Heal Point Pharma
 
 A modern, full-stack pharmacy web application for browsing and managing healthcare products, featuring dynamic product discovery and a secure admin dashboard.
 
@@ -6,12 +6,13 @@ A modern, full-stack pharmacy web application for browsing and managing healthca
 
 ## Overview
 
-Heal Point Pharma provides a responsive shopping experience with dynamic product listings, search and category filtering, and role-based admin access for managing the platform.
+Heal Point Pharma provides a responsive shopping experience with dynamic product listings, search and category filtering, and role-based access control for managing platform functionality.
 
 ## Key Features
 
 - **Product Discovery** — Dynamic product listings with search and category filtering.
-- **Admin Dashboard** — Secure, role-based access to product management.
+- **Admin Dashboard** — Dedicated dashboard for managing products and platform content.
+- **Role-Based Access Control (RBAC)** — Separate access permissions for Admin and User roles.
 - **Responsive UI** — Mobile-first design with reusable components.
 - **Data Management** — MongoDB integration through Prisma ORM.
 - **Performance** — Next.js App Router with server-side rendering and caching strategies.
@@ -28,9 +29,9 @@ Heal Point Pharma provides a responsive shopping experience with dynamic product
 
 ## Demo Access
 
-Explore the application using the following demo accounts:
+**Login Page:** [Heal Point Pharma](https://heal-point-pharma.vercel.app/auth/login)
 
-**🔑 Login Page:** [Heal Point Pharma](https://heal-point-pharma.vercel.app/auth/login)
+**Admin Dashboard:** [Access Dashboard](https://heal-point-pharma.vercel.app/admin)
 
 | Role | Email | Password |
 |---|---|---|
