@@ -253,9 +253,9 @@ const NavbarSearch = () => {
         placeholder="Search products..."
         autoComplete="off"
         className="
-          rounded-xl border !border-gray-300 pr-12
-          shadow-sm transition
-          focus:!border-green-600
+          rounded-lg border !border-green-300 pr-12
+           transition
+          focus:!border-green-500
           focus:ring-2 focus:!ring-green-300
         "
       />
