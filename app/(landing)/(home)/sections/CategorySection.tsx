@@ -12,7 +12,7 @@ const CategorySection = () => {
         <Heading text="Shop By Natural Product Category" />
 
         <div className="flex items-center justify-center gap-5 md:gap-10 mt-12 flex-wrap">
-          <Link href="/shop">
+          <Link href="/products">
             <CategoryCard
               icon={<FaBagShopping className="md:size-20" />}
               title="My Shop"

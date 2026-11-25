@@ -14,7 +14,7 @@ const EmptyCartMessage = () => {
         Looks like you haven&apos;t added anything to your cart yet.
       </p>
       <Link
-        href="/shop"
+        href="/products"
         className="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-all"
       >
         Go to Shop

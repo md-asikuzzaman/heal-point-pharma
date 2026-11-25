@@ -101,7 +101,7 @@ const CartDetails = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <Link
-                href="/shop"
+                href="/products"
                 className="w-full sm:w-auto py-3 px-6 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all text-center"
               >
                 Continue Shopping
